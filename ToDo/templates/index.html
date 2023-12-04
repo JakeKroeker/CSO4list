@@ -1,0 +1,78 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>{{ user.get_username }}'s ToDo List</h1>
+
+    <div class="new-item">
+        <form action="{% url 'create_list_item' %}" method="POST">
+            {% csrf_token %}
+            <div class="ns-form-group">
+                <label class="ns-label" for="item_name">
+                    ToDo Item Name
+                </label> 
+                <input type="text" class="ns-input fw-25" id="item_name" name="item_name" maxlength="50">
+            </div>
+
+            <div class="ns-form-group">
+                <label class="ns-label" for="item_description">
+                    ToDo Item Description
+                </label>
+                <input type="text" class="ns-input fw-50" id="item_description" name="item_description" maxlength="500">
+            </div>
+
+            <div class="ns-form-group">
+                <label class="ns-label" for="due_date">
+                    Item Due Time
+                </label>
+                <input id="due_date" name="due_date" type="datetime-local" />
+            </div>
+
+            <input type="hidden" name="next" value="{{ request.path }}">
+
+            <button type="submit" class="btn-lg btn-success">Add</button>
+        </form>
+    </div>
+    <table id="todo_table" class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Due Date</th>
+                <th scope="col">Description</th>
+                <th scope="col">Complete</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in entries %}
+        <tr>
+            <th><input type="hidden" name="itempk" value="{{item.id}}"><a class="biglink" href="{% url 'list_item' pk=item.id %}" >{{item.name}}</a></th>
+            <th>{{ item.due_date|date:'Y-m-d H:i' }}</th>
+            <th>{{item.description|default_if_none:''}}</th>
+            <th>
+                <fieldset class="ns-fieldset">
+                    <div class="ns-checkboxes">
+                        <div class="ns-checkboxes__item">
+                        <form action="{% url 'toggle_list_item' pk=item.id %}" id="complete_item_{{ item.id }}" class="hidden" method="POST">
+                            {% csrf_token %}
+                        </form>
+                        {% if item.complete %}
+                        <div class="hidden">1</div><input onchange="$('#complete_item_{{ item.id }}').submit();" class="ns-checkboxes__input" id="complete" name="complete" type="checkbox" value="complete" checked>
+                        {% else %}
+                        <div class="hidden">2</div><input onchange="$('#complete_item_{{ item.id }}').submit();" class="ns-checkboxes__input" id="complete" name="complete" type="checkbox" value="complete">
+                        {% endif %}
+                        <label class="ns-label ns-checkboxes__label" for="complete">
+                        </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </th>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block js %}
+{% load static %}
+<script src="{% static 'js/jquery-3.7.0.min.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/todo.js' %}"></script>
+{% endblock %}

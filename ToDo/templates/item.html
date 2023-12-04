@@ -1,0 +1,57 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<a class="biglink" href="{% url 'todo_list' %}">Back to list</a>
+    <h1>{{ user.get_username }}'s ToDo List Entry: {{item.name}}</h1>
+    <div class="new-question">
+        <form action="{% url 'update_list_item' pk=item.id %}" method="POST">
+            {% csrf_token %}
+            <div class="ns-form-group">
+                <label class="ns-label" for="item_name">
+                    ToDo Item Name
+                </label> 
+                <input class="ns-input fw-25" id="item_name" name="item_name" type="text" value="{{item.name}}" maxlength="50">
+            </div>
+
+            <div class="ns-form-group">
+                <label class="ns-label" for="item_description">
+                    ToDo Item Description
+                </label>
+                <input class="ns-input fw-50" id="item_description" name="item_description" type="text" value="{{item.description|default_if_none:''}}" maxlength="500">
+            </div>
+
+            <div class="ns-form-group">
+                <label class="ns-label" for="due_date">
+                    Item Due Time
+                </label>
+                <input id="due_date" name="due_date" type="datetime-local" value=""/>
+            </div>
+
+            <fieldset class="ns-fieldset">
+                <div class="ns-checkboxes">
+                    <div class="ns-checkboxes__item">
+                    {% if item.complete %}
+                    <input class="ns-checkboxes__input" id="complete" name="complete" type="checkbox" value="complete" checked>
+                    {% else %}
+                    <input class="ns-checkboxes__input" id="complete" name="complete" type="checkbox" value="complete">
+                    {% endif %}
+
+                    <label class="ns-label ns-checkboxes__label" for="complete">
+                    <span class="ns-label-span">Complete</span>
+                    </label>
+                    </div>
+                </div>
+            </fieldset>
+            <input type="hidden" name="next" value="{% url 'todo_list' %}">
+            <button type="submit" class="btn-lg btn-default">Update</button>
+        </form>
+        <form action="{% url 'delete_list_item' pk=item.id %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'todo_list' %}">
+            <button type="submit" class="btn-lg btn-danger">Delete</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById("due_date").defaultValue = "{{ item.due_date|date:'Y-m-d H:i' }}";
+    </script>
+{% endblock %}

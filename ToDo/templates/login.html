@@ -1,0 +1,27 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>ToDo List login or create user</h1>
+    <div>
+        {{ message }}
+        <form action="{% url 'login_create_user' %}" method="POST">
+            {% csrf_token %}
+            <div class="ns-form-group">
+                <label class="ns-label" for="username">
+                    username
+                </label> 
+                <input type="text" class="ns-input fw-25" id="username" name="username" maxlength="25">
+            </div>
+
+            <div class="ns-form-group">
+                <label class="ns-label" for="password">
+                    Password
+                </label>
+                <input type="password" class="ns-input fw-25" id="password" name="password" maxlength="25">
+            </div>
+
+            <input type="hidden" name="next" value="{% url 'todo_list' %}">
+            <button type="submit" class="btn-lg btn-default">Login or Create User</button>
+        </form>
+    </div>
+{% endblock %}
